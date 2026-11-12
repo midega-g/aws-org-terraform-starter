@@ -2,10 +2,10 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: /
-    schedule: { interval: weekly }
+    schedule: { interval: monthly }
     commit-message: { prefix: "ci" }
   - package-ecosystem: terraform
     directories:
       - /terraform/*
-    schedule: { interval: weekly }
+    schedule: { interval: monthly }
     commit-message: { prefix: "chore" }

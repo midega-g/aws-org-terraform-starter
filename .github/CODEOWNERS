@@ -1,0 +1,3 @@
+# Every PR needs a review from the owner (enforced once branch protection or
+# a ruleset with "Require review from Code Owners" is enabled on the repo).
+* @midega-g

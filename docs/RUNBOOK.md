@@ -40,10 +40,18 @@ Update this table when you run them. Record any fix under *Debugging log*.
 | gitleaks | `brew install gitleaks`, or a binary from https://github.com/gitleaks/gitleaks/releases |
 | pre-commit | `pipx install pre-commit` |
 | checkov | `pipx install checkov` |
+| tflint (used by the `terraform_tflint` hook) | binary from https://github.com/terraform-linters/tflint/releases, put it on `PATH` |
+| node + npx (CI commitlint; the local hook installs its own) | https://nodejs.org |
 
 ```bash
-./scripts/setup-hooks.sh        # installs pre-commit + pre-push hooks
+./scripts/setup-hooks.sh        # installs pre-commit, commit-msg and pre-push hooks
+make check                      # fmt + validate + gitleaks + checkov, same as CI
+pre-commit run --all-files      # every hook end to end
 ```
+
+Hooks: terraform fmt/validate/tflint, whitespace and YAML hygiene, gitleaks,
+checkov, commitlint (Conventional Commits), a block on direct pushes to `main`,
+and a local-only name filter (`.denylist`, gitignored, one regex per line).
 
 ## 3. AWS auth
 
@@ -193,7 +201,7 @@ git switch -c feat/<change>
 # edit, then:
 pre-commit run --all-files
 ./scripts/scan-secrets.sh
-git add <specific files> && git commit -m "feat: ..."
+git add <specific files> && git commit -m "feat(scope): short lowercase subject"
 git push -u origin feat/<change>
 gh pr create --fill --base main
 ```
@@ -201,6 +209,17 @@ gh pr create --fill --base main
 On GitHub Free with a **private** repo there is no server-side branch protection
 (API returns 403). The `no-push-to-main` pre-push hook and PR discipline are the
 controls. Public repos can use branch protection.
+
+Commit messages follow Conventional Commits (`feat`, `fix`, `docs`, `chore`, `ci`,
+`refactor`, `test`, `revert`; header max 72 chars; subject not capitalised). The
+`commit-msg` hook checks them locally and the `Commitlint` workflow checks every PR.
+GitHub's own "Merge pull request #N" titles are ignored by commitlint.
+
+**Reviews:** `.github/CODEOWNERS` makes the repo owner the required reviewer.
+A repository ruleset (see Decision log) enforces it on `main`.
+
+**Dependabot** runs monthly (GitHub Actions and Terraform providers) because this
+repo may not be watched closely. It opens PRs; major bumps need a read before merging.
 
 ## 10. Decision log
 
@@ -216,6 +235,7 @@ controls. Public repos can use branch protection.
 | Not AWS Control Tower | Wanted every control to be visible Terraform I can read, review and break on purpose | I own everything Control Tower would give me: guardrails, drift, account factory, upgrades |
 | GitHub OIDC trust limited to `main` and `pull_request` | Feature-branch pushes cannot assume the role | Plans only run via PRs |
 | No `prevent_destroy` in this starter | So you can clean up | Add it back for anything real |
+- **Monthly Dependabot, CODEOWNERS and a ruleset.** Dependabot runs monthly because the repo may be unattended. `CODEOWNERS` names the owner. A ruleset on `main` requires a PR and one code-owner approval, with repo admins allowed to bypass so the sole owner can still merge their own PRs. Command: `gh api -X POST repos/<owner>/<repo>/rulesets --input ruleset.json`.
 
 ## 11. Debugging log
 
@@ -340,3 +360,11 @@ extracted from.
 
   If you changed a policy's name, an attachment can break the apply. The pattern
   that worked: attach a temporary inline policy from the other admin, apply, then remove it.
+
+### `tflint: command not found` in the pre-commit run
+- **Cause:** the `terraform_tflint` hook calls the `tflint` binary, which pre-commit does not install.
+- **Fix:** install it (`gh release download -R terraform-linters/tflint -p tflint_linux_amd64.zip`, unzip, put on `PATH`), then `pre-commit run --all-files`.
+
+### `.denylist` blocks a commit that mentions your own username
+- **Cause:** the denylist is a plain case-insensitive regex, so the repo URL (which contains the owner's login) matched.
+- **Fix:** keep the owner's login out of `.denylist` and list only names that must not appear.

@@ -104,3 +104,5 @@ Keep it short:
 - [ ] Posted in the Speed Run Space AND the Pulse form submitted
 - [ ] Repo link works and the README quick start was followed end to end by someone/something that is not you
 - [ ] `./scripts/scan-secrets.sh` clean; no real IDs/emails in snippets or screenshots
+
+<!-- Notes to fold into the 'CI/CD' and 'Gitleaks and Checkov' sections: commitlint + monthly dependabot + CODEOWNERS ruleset; denylist hook keeps names out of the public repo. -->

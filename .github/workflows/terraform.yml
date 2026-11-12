@@ -58,7 +58,7 @@ jobs:
         working-directory: terraform/${{ matrix.workspace }}
     steps:
       - uses: actions/checkout@v7
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
       - run: terraform fmt -check -recursive
       - run: terraform init -backend=false -input=false
       - run: terraform validate
@@ -99,7 +99,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
       - name: Init
         run: |
           printf 'bucket = "%s"\nregion = "us-east-1"\n' "$TF_STATE_BUCKET" > ../backend.hcl
@@ -133,7 +133,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: us-east-1
-      - uses: hashicorp/setup-terraform@v3
+      - uses: hashicorp/setup-terraform@v4
       - name: Init
         run: |
           printf 'bucket = "%s"\nregion = "us-east-1"\n' "$TF_STATE_BUCKET" > ../backend.hcl

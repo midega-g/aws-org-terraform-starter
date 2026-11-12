@@ -26,7 +26,8 @@ placeholders like `<MGMT_ACCOUNT_ID>` and resolve them locally (see *Value looku
 | `terraform fmt -check` / `validate` (all 5 workspaces) | passing |
 | `checkov --config-file .checkov.yaml` | passing (2 inline skips, 4 documented global skips) |
 | `gitleaks` working tree + history | passing |
-| End-to-end `apply` of this exact extract in a fresh account | **not yet recorded** |
+| End-to-end `apply` of the private repo this was extracted from (opt-in region `af-south-1`) | applied and running (not reproducible here) |
+| End-to-end `apply` of this exact extract in a fresh account | **not recorded** (a new account needs its own payment details) |
 | CI plan/apply through OIDC from this repo | **not yet recorded** |
 
 Update this table when you run them. Record any fix under *Debugging log*.
@@ -262,7 +263,7 @@ extracted from.
   }
   ```
 
-  The starter defaults to `us-east-1`, which avoids this.
+  The starter defaults to `us-east-1`, which avoids this. Full opt-in guide: [`OPT-IN-REGION.md`](OPT-IN-REGION.md).
 
 ### CI plan fails with AccessDenied but the same plan works locally
 

@@ -10,10 +10,15 @@ This is the companion repo for the article in [`docs/ARTICLE.md`](docs/ARTICLE.m
 ("how I did it", not "how AWS says you should"). It is a sanitized extract of a
 private repo that runs a real organization. **Clone it and change what you need.**
 
-> **Status:** `terraform validate`, `checkov` and `gitleaks` pass on this repo.
-> I have not yet recorded a full end-to-end apply of this exact extract. Track
-> that in [`docs/RUNBOOK.md`](docs/RUNBOOK.md) -> *Verification status* and fix
-> anything that breaks. Run `plan` first, always.
+> **Status:** `terraform validate`, `checkov` and `gitleaks` pass on this repo,
+> and CI runs on every PR. The private repo this was extracted from has been
+> applied and runs a real organization in an opt-in region (`af-south-1`). I did
+> **not** re-apply this exact extract from scratch, because each new AWS account
+> needs its own payment details and I have no spare ones. Run `plan` first,
+> always, and fix anything that breaks (see [`docs/RUNBOOK.md`](docs/RUNBOOK.md)).
+>
+> **Region:** defaults to `us-east-1`. Want an opt-in region? Read
+> [`docs/OPT-IN-REGION.md`](docs/OPT-IN-REGION.md) first.
 
 ## Read this before you apply anything
 

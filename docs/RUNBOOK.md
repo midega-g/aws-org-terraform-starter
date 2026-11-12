@@ -235,7 +235,7 @@ repo may not be watched closely. It opens PRs; major bumps need a read before me
 | Not AWS Control Tower | Wanted every control to be visible Terraform I can read, review and break on purpose | I own everything Control Tower would give me: guardrails, drift, account factory, upgrades |
 | GitHub OIDC trust limited to `main` and `pull_request` | Feature-branch pushes cannot assume the role | Plans only run via PRs |
 | No `prevent_destroy` in this starter | So you can clean up | Add it back for anything real |
-- **Monthly Dependabot, CODEOWNERS and a ruleset.** Dependabot runs monthly because the repo may be unattended. `CODEOWNERS` names the owner. A ruleset on `main` requires a PR and one code-owner approval, with repo admins allowed to bypass so the sole owner can still merge their own PRs. Command: `gh api -X POST repos/<owner>/<repo>/rulesets --input ruleset.json`.
+- **Monthly Dependabot, CODEOWNERS and a ruleset.** Dependabot runs monthly because the repo may be unattended. `CODEOWNERS` names the owner. A ruleset on `main` requires a PR and one code-owner approval, with repo admins allowed to bypass so the sole owner can still merge their own PRs. Command: `gh api -X POST repos/<owner>/<repo>/rulesets --input docs/ruleset.json` (file is in this repo; admin bypass is role id 5).
 
 ## 11. Debugging log
 

@@ -1,0 +1,27 @@
+# Checkov configuration. Run:  checkov --config-file .checkov.yaml
+# Every skip has a reason. Do not add a skip without writing one.
+framework:
+  - terraform
+
+directory:
+  - terraform
+
+soft-fail: false
+compact: true
+quiet: true
+
+skip-path:
+  - ".*/\\.terraform/.*"
+
+skip-check:
+  # CKV_AWS_144 - S3 cross-region replication. DR control whose cost scales
+  # with data volume; a state bucket in a learning org does not justify it.
+  - CKV_AWS_144
+  # CKV_AWS_145 - S3 KMS (CMK) encryption. The state bucket uses SSE-S3 on
+  # purpose: it avoids ~$1/key/month plus request charges. Revisit for prod.
+  - CKV_AWS_145
+  # CKV_AWS_18 - S3 access logging. Needs a second bucket; object-level
+  # activity is better covered by CloudTrail data events if you need it.
+  - CKV_AWS_18
+  # CKV2_AWS_62 - S3 event notifications. Passive state bucket, no consumer.
+  - CKV2_AWS_62

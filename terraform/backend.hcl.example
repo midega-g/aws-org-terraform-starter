@@ -1,0 +1,4 @@
+# Copy to backend.hcl (gitignored) and fill in the values printed by
+# `terraform output` in 00_bootstrap.
+bucket = "<YOUR_STATE_BUCKET_NAME>"
+region = "us-east-1"

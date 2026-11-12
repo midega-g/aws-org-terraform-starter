@@ -1,0 +1,85 @@
+# gitleaks configuration for aws-org-terraform-starter
+#
+# Extends the default gitleaks ruleset (AWS keys, private keys, tokens, etc.)
+# and adds custom rules for the account-specific identifiers this repo must
+# never leak in tracked files. See docs/RUNBOOK.md for the masking
+# convention and how to resolve masked values locally.
+
+title = "aws-org-terraform-starter gitleaks config"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "aws-account-id-arn"
+description = "AWS 12-digit account ID inside an ARN"
+# Anchor to ARN context so ordinary 12-digit numbers don't false-positive.
+regex = '''arn:aws[a-z-]*:[a-z0-9-]*:[a-z0-9-]*:[0-9]{12}:'''
+tags = ["aws", "account-id"]
+
+[[rules]]
+id = "aws-account-id-bucket"
+description = "AWS account ID suffix on a bucket/name (e.g. my-bucket-<12-digit-id>)"
+regex = '''[a-z0-9-]+-[0-9]{12}\b'''
+tags = ["aws", "account-id"]
+
+[[rules]]
+id = "aws-org-id"
+description = "AWS Organizations org ID"
+regex = '''\bo-[a-z0-9]{10,32}\b'''
+tags = ["aws", "org-id"]
+
+[[rules]]
+id = "aws-root-id"
+description = "AWS Organizations root ID (anchored to org/root context)"
+# Only match r-xxxx when it looks like a real root id: 4-32 lowercase
+# alphanumerics AND not the documented example 'r-xxxx'. Context anchor via
+# 'root/' or 'root-id' or 'parent-id' keeps it from matching English words.
+regex = '''(root/|parent-id[ =]+|root[- ]id[ =:]+)r-[a-z0-9]{4,32}\b'''
+tags = ["aws", "root-id"]
+
+[[rules]]
+id = "aws-sso-instance-id"
+description = "IAM Identity Center (SSO) instance ID"
+regex = '''ssoins-[a-z0-9]{16}'''
+tags = ["aws", "sso"]
+
+[[rules]]
+id = "aws-identity-store-id"
+description = "IAM Identity Center identity store ID"
+regex = '''\bd-[0-9a-f]{10}\b'''
+tags = ["aws", "sso", "identity-store"]
+
+[[rules]]
+id = "aws-sso-app-id"
+description = "IAM Identity Center (SSO) application ID"
+regex = '''apl-[a-z0-9]{16}'''
+tags = ["aws", "sso"]
+
+[[rules]]
+id = "personal-email"
+description = "Real personal email address"
+regex = '''[a-zA-Z0-9._%+-]+@(gmail|outlook|hotmail|yahoo|proton|icloud)\.[a-z]{2,}'''
+tags = ["pii", "email"]
+
+[allowlist]
+description = "Placeholders, examples, lock files, and gitignored evidence are allowed"
+# Masked placeholders and documented example patterns are NOT secrets.
+regexes = [
+  '''<[A-Za-z_0-9-]+>''',             # <MGMT_ACCOUNT_ID>, <your-profile>, etc.
+  '''o-xxxxxxxxxx''',                 # documented example org ID
+  '''root/r-xxxx''',                  # documented example root ID
+  '''parent-id r-xxxx''',
+  '''arn:aws:iam::\*:''',             # wildcard account in policy ARNs
+]
+paths = [
+  '''\.terraform/''',                 # provider caches (gitignored, but skip on fs scans)
+  '''\.terraform\.lock\.hcl$''',
+  '''\.tfstate.*''',                  # any state file (gitignored)
+  '''errored\.tfstate$''',
+  '''\.tfvars$''',                    # gitignored env values
+  '''\.debug/''',
+  '''\.env$''',
+  '''\.pre-commit-config\.yaml$''',   # hook rev pins look numeric
+  '''\.gitleaks\.toml$''',            # this file documents the patterns
+]
